@@ -1,0 +1,68 @@
+#
+# project template by initproject
+# https://github.com/mlabbe/initproject
+#
+---
+generator:
+  type: nativeproject
+  version: 0.0.1
+
+# project prefix is a unique prefix.  it should be lowercase without underscores
+# and otherwise follow c naming conventions
+#
+prefix: nfd
+name: Native File Dialog
+author: Michael Labbe
+email: <mike@frogtoss.com>
+twitter: frogtoss
+copyright_holder: Frogtoss Games, Inc.
+copyright_year: 2016
+
+# initialize the project as a git repo and check it in once generated
+git_init: yes
+
+# todo: copyright string
+
+execution_types:
+  - debug
+  - release
+  - final
+
+# available environments correspond to premake --actions
+supported_environments:
+  x64:
+    windows:
+      - vs2010
+      - mingw
+      
+    linux:
+      - gcc
+      - clang
+
+    macos:
+      - clang
+      - xcode4
+
+  x86:
+    windows:
+      - vs2010
+      - mingw
+  
+
+share:
+  enable: yes
+  license: mit
+  readme: yes
+
+supported_paths:
+  src:
+    enable            : yes
+    shaders           : yes
+    config            : yes
+  public_include      : yes
+  build               : yes
+  vendors             : yes
+  test                : yes
+  
+
+  
