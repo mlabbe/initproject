@@ -31,7 +31,6 @@ def refresh():
             mkdir(pjoin(out_path, 'src', 'shaders'))
         if src['config']:
             mkdir(pjoin(out_path, 'src', 'config'))
-            # todo: generate config
 
     if paths['public_include']:
         mkdir(pjoin(out_path, 'include'))
@@ -41,13 +40,15 @@ def refresh():
 
     if paths['vendors']:
         mkdir(pjoin(out_path, 'vendors'))
+        mkdir(pjoin(out_path, 'vendors', 'include'))
+        mkdir(pjoin(out_path, 'vendors', 'lib'))
 
     if paths['test']:
         mkdir(pjoin(out_path, 'test'))
 
     # generate readme
     help.write(pjoin(out_path, 'README.md'),
-               help.load_tmpl(module, 'readme', cfg))
+               help.load_tmpl(module, 'README_md', cfg))
 
     # generate license
     share = cfg['share']
@@ -58,19 +59,68 @@ def refresh():
         license_str = help.licenses[share['license']]
         help.write(pjoin(out_path, 'LICENSE'),
                    help.render_tmpl(license_str, cfg))
+
+
+    # generate config
+    if paths['src']['config']:
+        config_filename = '%sconfig.h' % cfg['prefix']
+        help.write(pjoin(out_path, 'src', 'config', config_filename),
+                   help.load_tmpl(module, 'config_h', cfg))
         
 #
 # Fallback templates
 #
         
-def tmpl_readme():
+def tmpl_README_md():
     return """# {{ name }} #
 
-## Supported Environments ##
-{% for arch in supported_environments %}
- - {{ arch }}
-{% endfor %}
+{% if project_type == "lib" or project_type == "dll" %}
+# Example Usage
 
-# Contact #
-{{ author }} can be reached at {{ email }} or on Twitter at @{{ twitter }}.
+```C
+#include <{{ prefix }}.h>
+```
+{% endif %}
+
+## Changelog ##
+
+release | what's new                          | date
+--------|-------------------------------------|---------
+0.0.1   | initial                             | 
+
+## Building ##
+
+{% if supported_paths.build %}
+{{ name }} uses [Premake5](https://premake.github.io/download.html) generated Makefiles and IDE project files.  The generated project files are checked in under `build/` so you don't have to download and use Premake in most cases.
+{% endif %}
+
+# Copyright and Credit #
+
+Copyright &copy; {{ copyright_years }} {{ copyright_holder }}. {% if share.enable %}File [LICENSE](LICENSE) covers all files in this repo unless expressly noted.{% endif %}
+
+{{ name }} by {{ author_name }}
+<{{ author_email }}> 
+{% if author_twitter %}[@{{ author_twitter }}](https://www.twitter.com/{{ author_twitter }}) {% endif %}
+
+## Support ##
+
+Directed support for this work is available from the original author under a paid agreement.
+
+[Contact author]({{ author_contact_url }})
+"""
+
+def tmpl_config_h():
+    return"""/* 
+ * {{ name }} Copyright (C) {{ copyright_years }} {{ copyright_holder }}
+ */
+
+#pragma once
+
+{% for etype in execution_types %}
+//
+// {{ etype|title }}
+//
+#if defined({{ etype|upper }})
+#endif
+{% endfor %}
 """
